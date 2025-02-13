@@ -18,13 +18,13 @@ jobs:
             Library-${{ runner.os }}-
 
       - name: Setup Unity
-        uses: game-ci/unity-setup@v2
+        uses: game-ci/unity-setup@v3
         with:
-          unityVersion: 2022.3.0f1
-          cache: true
+          unityVersion: 2022.3.50f1
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Unity Tests
-        uses: game-ci/unity-test-runner@v2
+        uses: game-ci/unity-test-runner@v3
         with:
-          unityVersion: 2022.3.0f1
+          unityVersion: 2022.3.50f1
           githubToken: ${{ secrets.GITHUB_TOKEN }}
