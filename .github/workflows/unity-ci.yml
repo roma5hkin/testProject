@@ -20,7 +20,7 @@ jobs:
           unity-editor -runTests -batchmode -projectPath ${{ github.workspace }} -testResults results.xml -testPlatform editmode -logFile log.txt -quit
 
       - name: Upload Test Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Test Results
           path: results.xml
@@ -45,7 +45,7 @@ jobs:
           targetPlatform: StandaloneWindows64
 
       - name: Upload Build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Unity Build
           path: build/
