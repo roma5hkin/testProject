@@ -2,7 +2,7 @@ name: Test and Build Unity Project
 
 on:
   push:
-    branches: [ main ]  # Или другая твоя ветка
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -23,39 +23,12 @@ jobs:
             Library-${{ runner.os }}-
 
       - name: Set up Unity
-        uses: game-ci/unity-setup@v3
+        uses: game-ci/unity-actions/setup@v3
         with:
-          unityVersion: 2022.3.50f1  
+          unityVersion: 2022.3.0f1  # Укажи свою версию Unity
 
       - name: Run tests
-        uses: game-ci/unity-test-runner@v2
+        uses: game-ci/unity-actions/test-runner@v3
         with:
           projectPath: .
           testMode: EditMode
-
-  build:
-    name: Build Unity Project
-    runs-on: ubuntu-latest
-    needs: test 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Cache Library folder
-        uses: actions/cache@v3
-        with:
-          path: Library
-          key: Library-${{ runner.os }}-${{ github.sha }}
-          restore-keys: |
-            Library-${{ runner.os }}-
-
-      - name: Set up Unity
-        uses: game-ci/unity-setup@v3
-        with:
-          unityVersion: 2022.3.50f1 
-
-      - name: Build project
-        uses: game-ci/unity-builder@v2
-        with:
-          projectPath: .
-          targetPlatform: StandaloneOSX 
