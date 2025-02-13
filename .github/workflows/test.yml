@@ -1,6 +1,18 @@
+name: Unity Tests
+
+on:  
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:  # Позволяет запускать вручную в GitHub Actions
+
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
