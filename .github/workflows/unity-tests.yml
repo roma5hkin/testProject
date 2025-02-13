@@ -1,0 +1,30 @@
+name: Run Unity Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache Library
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ runner.os }}-${{ hashFiles('**/*.cs', '**/*.unity', '**/*.asset', '**/*.prefab', '**/*.mat') }}
+          restore-keys: |
+            Library-${{ runner.os }}-
+
+      - name: Setup Unity
+        uses: game-ci/unity-setup@v2
+        with:
+          unityVersion: 2022.3.0f1
+          cache: true
+
+      - name: Run Unity Tests
+        uses: game-ci/unity-test-runner@v2
+        with:
+          unityVersion: 2022.3.0f1
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
