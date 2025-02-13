@@ -1,52 +1,55 @@
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using NUnit.Framework;
 using UnityEngine;
-using UnityEditor;
 using System.Linq;
-using System.Collections.Generic;
 
 public class PlayerItemTests
 {
-    private const string AssetsFolder = "Assets/Items"; // Папка с ассетами
+    private static readonly string[] ValidTypes = { "Common", "Rare", "Epic", "Legendary" };
+
+    private PlayerItem[] LoadAllPlayerItems()
+    {
+#if UNITY_EDITOR
+        return AssetDatabase.FindAssets("t:PlayerItem")
+            .Select(AssetDatabase.GUIDToAssetPath)
+            .Select(AssetDatabase.LoadAssetAtPath<PlayerItem>)
+            .ToArray();
+#else
+        return Resources.LoadAll<PlayerItem>("");
+#endif
+    }
 
     [Test]
-    public void PlayerItems_Should_Have_Valid_Properties()
+    public void PlayerItems_ValidType()
     {
-        PlayerItem[] items = GetPlayerItems();
-        List<string> errors = new List<string>();
+        var items = LoadAllPlayerItems();
+        Assert.Greater(items.Length, 0, "No PlayerItems found!");
 
         foreach (var item in items)
         {
-            string assetPath = AssetDatabase.GetAssetPath(item);
-
-            // Проверка типа
-            string[] validTypes = { "Common", "Rare", "Epic", "Legendary" };
-            if (!validTypes.Contains(item.Type))
-                errors.Add($"[Asset: {assetPath}] Invalid Type: {item.Type}");
-
-            // Проверка имени
-            string expectedName = "PlayerItem_" + item.Type;
-            if (item.name != expectedName)
-                errors.Add($"[Asset: {assetPath}] Invalid name: Expected 'PlayerItem_{item.Type}', but got '{item.name}'");
-
-            // Проверка цены
-            if (item.Price < 1 || item.Price > 1000)
-                errors.Add($"[Asset: {assetPath}] Invalid Price: Expected between 1 and 1000, but got {item.Price}");
-        }
-
-        // Если есть ошибки — кидаем Assert.Fail()
-        if (errors.Count > 0)
-        {
-            Assert.Fail(string.Join("\n", errors));
+            Assert.Contains(item.Type, ValidTypes.ToList(), $"Invalid Type: {item.Type} in {item.name}");
         }
     }
 
-    private PlayerItem[] GetPlayerItems()
+    [Test]
+    public void PlayerItems_ValidNameFormat()
     {
-        string[] guids = AssetDatabase.FindAssets("t:PlayerItem", new[] { AssetsFolder });
-        return guids
-            .Select(AssetDatabase.GUIDToAssetPath)
-            .Select(path => AssetDatabase.LoadAssetAtPath<PlayerItem>(path))
-            .Where(item => item != null)
-            .ToArray();
+        var items = LoadAllPlayerItems();
+        foreach (var item in items)
+        {
+            Assert.AreEqual($"PlayerItem_{item.Type}", item.name, $"Invalid Name: {item.name}, expected PlayerItem_{item.Type}");
+        }
+    }
+
+    [Test]
+    public void PlayerItems_ValidPriceRange()
+    {
+        var items = LoadAllPlayerItems();
+        foreach (var item in items)
+        {
+            Assert.IsTrue(item.Price >= 1 && item.Price <= 1000, $"Invalid Price: {item.Price} in {item.name}");
+        }
     }
 }

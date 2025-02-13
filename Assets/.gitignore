@@ -1,0 +1,15 @@
+# Игнорируем библиотеки и временные файлы
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+
+# Игнорируем настройки пользователей
+UserSettings/
+
+# Игнорируем кешированные ассеты
+*.csproj
+*.unitypackage
+*.sln

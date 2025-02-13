@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets/Scripts/PlayerItem.cs" />
+    <Compile Include="Assets/Scripts/PlayerItemValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
