@@ -22,13 +22,13 @@ jobs:
           restore-keys: |
             Library-${{ runner.os }}-
 
-      - name: Set up Unity
-        uses: game-ci/unity-setup@v2  # Изменил на v2
+      - name: Set up Unity Builder
+        uses: game-ci/unity-builder@v2
         with:
-          unityVersion: 2022.3.0f1  # Укажи свою версию Unity
+          unityVersion: 2022.3.50f1
 
       - name: Run tests
-        uses: game-ci/unity-test-runner@v2  # Используем v2
+        uses: game-ci/unity-test-runner@v2
         with:
           projectPath: .
           testMode: EditMode
@@ -49,13 +49,13 @@ jobs:
           restore-keys: |
             Library-${{ runner.os }}-
 
-      - name: Set up Unity
-        uses: game-ci/unity-setup@v2
+      - name: Set up Unity Builder
+        uses: game-ci/unity-builder@v2
         with:
           unityVersion: 2022.3.50f1  
 
       - name: Build project
-        uses: game-ci/unity-builder@v2 
+        uses: game-ci/unity-builder@v2
         with:
           projectPath: .
-          targetPlatform: StandaloneOSX  
+          targetPlatform: StandaloneOSX
