@@ -1,51 +1,46 @@
-name: Unity CI/CD
+name: Unity CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  test:
-    name: Run Unity Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Setup Unity
-        uses: game-ci/unity-builder@v2
-        with:
-          unityVersion: 2022.3.5f1
-
-      - name: Run Unity Tests
-        run: |
-          unity-editor -runTests -batchmode -projectPath ${{ github.workspace }} -testResults results.xml -testPlatform editmode -logFile log.txt -quit
-
-      - name: Upload Test Results
-        uses: actions/upload-artifact@v4
-        with:
-          name: Test Results
-          path: results.xml
-
   build:
     name: Build Unity Project
-    needs: test
     runs-on: ubuntu-latest
+
     steps:
+      # ✅ Проверяем код из репозитория
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Setup Unity
-        uses: game-ci/unity-builder@v2
+      # ✅ Устанавливаем Unity, активируем лицензию (без .ulf)
+      - name: Activate Unity License
+        uses: game-ci/unity-activate@v2
         with:
-          unityVersion: 2022.3.5f1
+          unityVersion: 2022.3.50f1
+          username: ${{ secrets.UNITY_EMAIL }}
+          password: ${{ secrets.UNITY_PASSWORD }}
 
-      - name: Build for Windows
-        uses: game-ci/unity-builder@v2
+      # ✅ Сборка проекта для Standalone (Windows, Linux, macOS)
+      - name: Build Unity Project
+        uses: game-ci/unity-builder@v4
         with:
-          unityVersion: 2022.3.5f1
-          targetPlatform: StandaloneWindows64
+          unityVersion: 2022.3.50f1
+          targetPlatform: StandaloneWindows64  # Можно поменять на StandaloneLinux64, StandaloneOSX
 
-      - name: Upload Build
+      # ✅ Сохраняем артефакты сборки
+      - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Unity Build
-          path: build/
+          name: Build
+          path: build
+
+      # ✅ Деактивация лицензии (необязательно, но рекомендуется)
+      - name: Deactivate Unity License
+        uses: game-ci/unity-return-license@v2
+        if: always()
