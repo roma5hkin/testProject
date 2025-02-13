@@ -1,0 +1,51 @@
+name: Unity CI/CD
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Run Unity Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Unity
+        uses: game-ci/unity-builder@v2
+        with:
+          unityVersion: 2022.3.5f1
+
+      - name: Run Unity Tests
+        run: |
+          unity-editor -runTests -batchmode -projectPath ${{ github.workspace }} -testResults results.xml -testPlatform editmode -logFile log.txt -quit
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Test Results
+          path: results.xml
+
+  build:
+    name: Build Unity Project
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Unity
+        uses: game-ci/unity-builder@v2
+        with:
+          unityVersion: 2022.3.5f1
+
+      - name: Build for Windows
+        uses: game-ci/unity-builder@v2
+        with:
+          unityVersion: 2022.3.5f1
+          targetPlatform: StandaloneWindows64
+
+      - name: Upload Build
+        uses: actions/upload-artifact@v3
+        with:
+          name: Unity Build
+          path: build/
